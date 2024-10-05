@@ -8,7 +8,9 @@ import ru.justagod.events.db.DatabaseService
 import ru.justagod.events.plugins.*
 import ru.justagod.events.security.configureSecurity
 
-val env = dotenv()
+val env = dotenv {
+    ignoreIfMissing = true
+}
 
 fun main(args: Array<String>) {
     io.ktor.server.netty.EngineMain.main(args)
