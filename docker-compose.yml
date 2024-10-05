@@ -13,7 +13,9 @@ services:
       - DB_USER=manager
       - DB_PASSWORD=qwerty
       - DB_URL=jdbc:postgresql://db:5432/manager
-      - ADMIN_PASS=${ADMIN_PASS}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ISSUER=${JWT_ISSUER}
+      - JWT_AUDIENCE=${JWT_AUDIENCE}
   db:
     image: "postgres:12.19-bullseye"
     restart: unless-stopped

@@ -20,5 +20,9 @@ jobs:
           registry: ${{ secrets.REGISTRY_URL }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
-    - name: Build the Docker image
-      run: docker compose . --file Dockerfile --tag my-image-name:$(date +%s)
+
+    - name: Build Docker images
+      run: ADMIN_PASS=${{ secrets.ADMIN_PASS }} docker compose build
+
+    - name: Publish Docker images
+      run: ADMIN_PASS=${{ secrets.ADMIN_PASS }} docker compose push
