@@ -21,7 +21,10 @@ fun Application.configureRouting() {
         }
     }
     routing {
-        staticFiles("/", File("web/dist"))
+        get("{...}") {
+            call.respondFile(File("web/dist/index.html"))
+        }
+        staticFiles("/assets", File("web/dist/assets"))
     }
 }
 
