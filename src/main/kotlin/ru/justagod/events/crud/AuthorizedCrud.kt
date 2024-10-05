@@ -93,7 +93,7 @@ private fun Route.doCruding() {
         route("goods") {
             get {
                 val requests = DatabaseService.transaction {
-                    GoodRequest.all().sortedByDescending { it.creationTime }.map { it.dto() }
+                    GoodRequest.all().filter { !it.deleted }.sortedByDescending { it.creationTime }.map { it.dto() }
                 }
 
                 call.respond(requests)
@@ -182,7 +182,9 @@ private fun Route.doCruding() {
             post("del") {
                 val id = call.receive<Int>()
                 DatabaseService.transaction {
-                    GoodRequest.findById(id)!!.delete()
+                    val r = GoodRequest.findById(id)!!
+                    r.deleted = true
+                    r.flush()
                 }
 
                 call.respond("{}")

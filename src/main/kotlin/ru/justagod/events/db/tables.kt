@@ -79,6 +79,7 @@ object GoodRequests : ManagerTable("goods_requests") {
     val cost = double("cost")
     val importancy = integer("importancy")
     val author = reference("author", Participants)
+    val deleted = bool("deleted").defaultExpression(Op.FALSE)
 }
 
 class GoodRequest(id: EntityID<Int>) : ManagerEntity<GoodRequestDTO>(id) {
@@ -89,6 +90,7 @@ class GoodRequest(id: EntityID<Int>) : ManagerEntity<GoodRequestDTO>(id) {
     var count by GoodRequests.count
     var cost by GoodRequests.cost
     var importancy by GoodRequests.importancy
+    var deleted by GoodRequests.deleted
 
     var author by Participant referencedOn GoodRequests.author
 
