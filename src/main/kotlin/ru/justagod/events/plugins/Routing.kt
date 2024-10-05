@@ -11,6 +11,7 @@ import io.ktor.server.resources.Resources
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
+import java.io.File
 
 fun Application.configureRouting() {
     install(AutoHeadResponse)
@@ -20,6 +21,7 @@ fun Application.configureRouting() {
         }
     }
     routing {
+        staticFiles("/", File("web/dist"))
     }
 }
 
