@@ -182,9 +182,15 @@ private fun Route.doCruding() {
             post("del") {
                 val id = call.receive<Int>()
                 DatabaseService.transaction {
-                    val r = GoodRequest.findById(id)!!
-                    r.deleted = true
-                    r.flush()
+                    val target = GoodRequest.findById(id)!!
+                    target.deleted = true
+                    val author = Participant.findById(call.principal<ParticipantDTO>()!!.id)!!
+                    logGood(
+                        author,
+                        target,
+                        "Удалил"
+                    )
+                    target.flush()
                 }
 
                 call.respond("{}")
