@@ -1,0 +1,89 @@
+version: "3.9"
+
+services:
+  spk:
+    build:
+      dockerfile: Dockerfile
+    volumes:
+      - /root/uploads:/work/uploads
+      - /root/logs:/work/logs
+      - /var/blog:/var/blog
+    restart: unless-stopped
+    environment:
+      - DB_USER=spk
+      - DB_PASSWORD=qwerty
+      - DB_URL=jdbc:postgresql://db:5432/spk
+      - BOT_TOKEN=${BOT_TOKEN}
+      - ADMIN_PASS=${ADMIN_PASS}
+      - BLOG_PATH=${BLOG_PATH}
+      - ORIGIN=${ORIGIN}
+  db:
+    image: "postgres:12.19-bullseye"
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=spk
+      - POSTGRES_PASSWORD=qwerty
+    ports:
+      - "5432:5432"
+    volumes:
+        - data-volume:/var/lib/postgresql/data
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v2.45.5
+    restart: unless-stopped
+    volumes:
+      - ${PWD}/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-persistent:/prometheus
+
+  portainer:
+    image: portainer/portainer-ce:2.20.2-alpine
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+  nginx:
+    restart: unless-stopped
+    build:
+      dockerfile: nginx.Dockerfile
+      args:
+        - NGINX_PASS=${ADMIN_PASS}
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+    ports:
+      - "443:443/tcp"
+      - "80:80/tcp"
+
+  node_exporter:
+    image: prom/node-exporter:v1.8.0
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--path.rootfs=/rootfs"
+      - "--collector.filesystem.ignored-mount-points='^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)'"
+      - '--web.listen-address=0.0.0.0:9100'
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+  grafana:
+    container_name: grafana
+    image: grafana/grafana-oss:10.4.2-ubuntu
+    volumes:
+      - grafana-persistent:/var/lib/grafana
+    restart: unless-stopped
+  adminer:
+    image: adminer:4.8.1-standalone
+  registry:
+    image: registry:2.8.3
+    ports:
+      - "127.0.0.1:5000:5000"
+
+volumes:
+  data-volume:
+  grafana-persistent:
+  prometheus-persistent:
+  portainer_data:
