@@ -37,7 +37,10 @@ private fun logGood(author: Participant, target: GoodRequest, message: String) {
 private fun Route.doCruding() {
     route("/api") {
         get("info") {
-            call.respond(EventInfoDTO("Kek", "LOL"))
+            val info = """
+                Ну крч тоси боси барбадоси
+            """.trimIndent()
+            call.respond(EventInfoDTO("Юрин др 2024", info))
         }
         route("me") {
 
