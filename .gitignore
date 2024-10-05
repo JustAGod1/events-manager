@@ -34,3 +34,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+web/node_modules
+web/dist
+.env

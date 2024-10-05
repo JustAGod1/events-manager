@@ -21,10 +21,25 @@ repositories {
     mavenCentral()
 }
 
+val exposedVersion = "0.55.0"
+
 dependencies {
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-kotlin-datetime:$exposedVersion")
+
+    implementation("commons-codec:commons-codec:1.17.1")
+
+    implementation("org.postgresql:postgresql:42.7.4")
+
+    implementation("io.github.cdimascio:dotenv-kotlin:6.4.2")
+
+
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-auth-jvm")
     implementation("io.ktor:ktor-server-auth-jwt-jvm")
+    implementation("io.ktor:ktor-server-sessions")
     implementation("io.ktor:ktor-server-auto-head-response-jvm")
     implementation("io.ktor:ktor-server-resources")
     implementation("io.ktor:ktor-server-host-common-jvm")
@@ -37,4 +52,12 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+}
+
+tasks.create("unpackDist", Copy::class) {
+    group = "distribution"
+    val dist = tasks.findByName("distZip")!!
+    from(dist.outputs.files.map { zipTree(it) })
+    into(rootProject.file("build").resolve("unpacked"))
+    dependsOn(dist)
 }

@@ -26,7 +26,7 @@ RUN apt-get install -y openjdk-11-jdk
 WORKDIR /work
 
 COPY --from=BUILD_NPM /build/dist web/dist
-COPY --from=BUILD_JAVA /build/build/unpacked/spk-0.0.1 dist
+COPY --from=BUILD_JAVA /build/build/unpacked/e-manager-0.0.1 dist
 
 ENTRYPOINT ./dist/bin/spk
 

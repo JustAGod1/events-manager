@@ -1,4 +1,9 @@
 package ru.justagod.events.crud.dto
 
-class EventInfoDTO {
-}
+import kotlinx.serialization.Serializable
+
+@Serializable
+class EventInfoDTO(
+    val name: String,
+    val info: String
+)

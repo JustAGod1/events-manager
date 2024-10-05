@@ -1,4 +1,4 @@
 package ru.justagod.events.security
 
-class EventsUser {
-}
+
+data class ParticipantSession(val name: String, val user: Int)

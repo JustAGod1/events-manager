@@ -4,7 +4,7 @@ services:
   db:
     image: "postgres:12.19-bullseye"
     environment:
-      - POSTGRES_USER=spk
+      - POSTGRES_USER=manager
       - POSTGRES_PASSWORD=qwerty
     ports:
       - "5432:5432"

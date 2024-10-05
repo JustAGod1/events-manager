@@ -2,32 +2,13 @@ package ru.justagod.events.crud.dto
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import ru.justagod.events.crud.dto.ParticipantDTO.ParticipantDTOSafe
 
 @Serializable
-class ParticipantDTO(
+class MoneyTransactionDTO(
     val id: Int,
     val creationTime: Instant,
 
-    val name: String,
-    val password: String?,
-
-    val status: String?,
-    val whois: String?,
-
-    val admin: Boolean
-
-) {
-
-    @Serializable
-    class ParticipantDTOSafe(
-        val id: Int,
-        val name: String,
-
-        val status: String?,
-        val whois: String?,
-
-        val admin: Boolean?
-    )
-
-    fun safe() = ParticipantDTOSafe(id, name, status, whois, admin)
-}
+    val author: ParticipantDTOSafe,
+    val amount: Double
+)
