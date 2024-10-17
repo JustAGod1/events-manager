@@ -1,9 +1,9 @@
-import React, {useState} from "react";
-import {Heading, HStack, Nav, Navbar, Sidenav, Text, VStack} from "rsuite";
-import {Link, Outlet, useLoaderData, useMatch} from "react-router-dom";
+import React from "react";
+import {Link, Outlet, useLoaderData, useMatches} from "react-router-dom";
 import {Section} from "./section";
-import {authorizedGet, authorizedPost} from "../base";
+import {authorizedGet, VStack} from "../base";
 import {EventInfoDTO, ParticipantDTO} from "../../base/data";
+import {BottomNavigation, BottomNavigationAction, Box, Paper} from "@mui/material";
 
 class HolderInfo {
     info: EventInfoDTO
@@ -18,30 +18,55 @@ class HolderInfo {
 function NavPill(props: {
     name: string,
     to: string,
-    icon: React.Element
+    icon: React.Element,
+    value: number
 }) {
-    const match = useMatch(props.to) && true
-    return <Nav.Item as={Link} id={props.to} icon={props.icon} active={match !== null} to={props.to}>
-        {props.name}
-    </Nav.Item>
+    return <BottomNavigationAction
+        label={props.name} icon={props.icon} component={Link} to={props.to} value={props.value} showLabel/>
 }
 
 function ManagerNavigation(props: {
     sections: Section[],
     user: ParticipantDTO
 }) {
-    const [expanded, setExpanded] = useState<boolean>(true)
-    return <Sidenav style={{maxWidth: "250px", height: "100%"}} expanded={expanded}>
-        <Sidenav.Body>
-            <Nav>
-                {props.sections
-                    .filter(a => !a.adminOnly || props.user.admin)
-                    .map(a => <NavPill name={a.name} to={a.path} icon={a.icon}/>)}
-            </Nav>
-        </Sidenav.Body>
-        <Sidenav.Toggle onToggle={setExpanded}/>
-    </Sidenav>
+    const toDisplay = props.sections
+        .filter(e => !e.adminOnly || props.user.admin)
 
+
+    const matches = useMatches()
+
+    console.log(matches)
+
+    let selected = null
+
+    for (let i = 0; i < toDisplay.length; i++) {
+        if (matches.find(e => e.pathname == toDisplay[i].path)) {
+            selected = i
+            break
+        }
+    }
+    console.log(selected)
+
+    return <Paper
+        sx={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            right: 0,
+        }}
+    >
+        <BottomNavigation
+            sx={{
+                elevation: 3,
+                padding: "2em",
+            }}
+            value={selected}
+        >
+            {
+                toDisplay.map((e, i) => <NavPill name={e.name} to={e.path} icon={e.icon} value={i}/>)
+            }
+        </BottomNavigation>
+    </Paper>
 }
 
 export async function holderLoader(): Promise<HolderInfo> {
@@ -55,20 +80,12 @@ export function Holder(props: {
     sections: Section[]
 }) {
     const data = useLoaderData() as HolderInfo
-    return <VStack spacing={0} style={{height: "100%", width: "100%"}}>
-        <Navbar style={{
-            width: "100%",
-            padding: "1em"
+    return <Box sx={{height: "100%", width: "100%"}}>
+        <Box sx={{
+            padding: ".5em"
         }}>
-            <Heading>
-            {data.info.name}
-            </Heading>
-        </Navbar>
-        <HStack style={{height: "100%", width: "100%"}}>
-            <ManagerNavigation sections={props.sections} user={data.user}/>
-            <HStack style={{height: "100%", padding: "1em", width: "100%"}} alignItems={"flex-start"}>
-                <Outlet/>
-            </HStack>
-        </HStack>
-    </VStack>
+            <Outlet/>
+        </Box>
+        <ManagerNavigation sections={props.sections} user={data.user}/>
+    </Box>
 }

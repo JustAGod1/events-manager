@@ -6,17 +6,14 @@ import {
     MoneyTransactionDTO,
     PatchGoodRequestDTO
 } from "../../base/data";
-import {Button, Divider, Heading, HStack, Input, InputNumber, Modal, Text, useToaster, VStack} from "rsuite";
-import {authorizedGet, authorizedPost, showOkMessage} from "../base";
+import {authorizedGet, authorizedPost, HStack, InputNumber, showOkMessage, VStack} from "../base";
 import {Section} from "./section";
-import ShoppingCart from "@rsuite/icons/legacy/ShoppingCart";
-import Edit from "@rsuite/icons/legacy/Edit";
-import Plus from "@rsuite/icons/legacy/Plus";
-import Minus from "@rsuite/icons/legacy/Minus";
 import {useLoaderData, useRevalidator} from "react-router-dom";
 import Color from "https://colorjs.io/dist/color.js";
 import {BarChart} from "@mui/x-charts";
 import DataGrid, {Column} from "react-data-grid";
+import {Box, Button, Divider, Icon, Modal, TextField, Typography} from "@mui/material";
+import {useSnackbar} from "notistack";
 
 const cardCss: CSSProperties = {
     border: "solid 1px gray",
@@ -44,7 +41,7 @@ function GoodEditor(props: {
     const [count, setCount] = useState<number>(props.info.count)
     const [cost, setCost] = useState<number>(props.info.cost)
 
-    const toaster = useToaster()
+    const toaster = useSnackbar()
 
     const revalidator = useRevalidator()
 
@@ -78,31 +75,90 @@ function GoodEditor(props: {
         props.setOpen(false)
     }
 
-    return <Modal open={props.open} onClose={_ => props.setOpen(false)}>
-        <Modal.Title>
-            {props.info.name}
-        </Modal.Title>
-        <Modal.Body>
-            <VStack>
-                Количество
+    const style = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+    };
+
+    return <Modal
+        open={props.open}
+        onClose={_ => props.setOpen(false)}
+    >
+        <VStack sx={style} spacing={"1em"}>
+            <Typography variant={"h2"}>
+                {props.info.name}
+            </Typography>
+
+            <div
+                style={{
+                    display: "grid",
+                    gridAutoRows: "1fr",
+                    gridTemplateColumns: "1fr 1fr"
+                }}
+            >
+
+                <Typography>Количество</Typography>
                 <InputNumber value={count} onChange={setCount}/>
-            </VStack>
-            <VStack>
-                Примерная цена за штуку
+
+                <Typography>Примерная цена за штуку</Typography>
                 <InputNumber value={cost} onChange={setCost}/>
-            </VStack>
-        </Modal.Body>
-        <Modal.Footer>
-            <Button color={"green"} onClick={save}>
+            </div>
+
+            <Button color={"success"} variant={"contained"} onClick={save}>
                 Сохранить
             </Button>
-            <Button color={"red"} onClick={del}>
+            <Button color={"error"} variant={"outlined"} onClick={del}>
                 Удалить
             </Button>
-
-        </Modal.Footer>
-
+            <Button color={"secondary"} onClick={_ => props.setOpen(false)}>
+                Закрыть
+            </Button>
+        </VStack>
     </Modal>
+}
+
+function Plus() {
+    return <Icon>add</Icon>
+}
+
+function Minus() {
+    return <Icon>remove</Icon>
+}
+
+function Edit() {
+    return <Icon>edit</Icon>
+}
+
+function IconButton(props: {
+    onClick: () => void,
+    children: any
+}) {
+    return <Button onClick={props.onClick} sx={{padding: "1em"}} variant={"outlined"}>
+        {props.children}
+    </Button>
+}
+
+function PlusButton(props: {
+    onClick: () => void
+}) {
+    return <IconButton onClick={props.onClick}>
+        <Plus/>
+    </IconButton>
+}
+
+function MinusButton(props: {
+    onClick: () => void
+}) {
+    return <IconButton onClick={props.onClick}>
+        <Minus/>
+    </IconButton>
 }
 
 function GoodCard(props: {
@@ -121,7 +177,7 @@ function GoodCard(props: {
     const borderColor = gray.range(red)(importancyPosition)
 
     const revalidator = useRevalidator()
-    const toaster = useToaster()
+    const toaster = useSnackbar()
 
     const [modalOpen, setModalOpen] = useState<boolean>(false)
 
@@ -147,49 +203,41 @@ function GoodCard(props: {
         await sendSimple("/api/goods/dec_cnt", "Уменьшил")
     }
 
-    return <VStack style={{padding: "16px", border: "solid 1px", borderRadius: "8px", borderColor: borderColor}}>
+    return <VStack style={{padding: "2em", border: "solid 2px", borderRadius: "8px", borderColor: borderColor}}>
         <VStack style={{marginBottom: "16px"}}>
-            <Text size={24} weight={"bold"}>
+            <Typography variant={"h4"} fontWeight={"bold"}>
                 {props.info.name}
-            </Text>
-            <Text style={{color: "gray"}}>
+            </Typography>
+            <Typography style={{color: "gray"}}>
                 Предложил: {props.info.author.name}
-            </Text>
+            </Typography>
         </VStack>
         <HStack>
             Важность:
-            <Text
+            <Typography
                 style={{
                     color: borderColor
-                }}>{props.info.importancy}</Text>
+                }}>{props.info.importancy}</Typography>
         </HStack>
         <HStack>
-            <Button onClick={decImportancy}>
-                <Minus/>
-            </Button>
-            <Button onClick={incImportancy}>
-                <Plus/>
-            </Button>
+            <MinusButton onClick={decImportancy}/>
+            <PlusButton onClick={incImportancy}/>
         </HStack>
         <HStack>
             Количество:
             {props.info.count}
         </HStack>
         <HStack>
-            <Button onClick={decCount}>
-                <Minus/>
-            </Button>
-            <Button onClick={incCount}>
-                <Plus/>
-            </Button>
+            <MinusButton onClick={decCount}/>
+            <PlusButton onClick={incCount}/>
         </HStack>
-        <Text size={16}>
+        <Typography>
             {`${props.info.cost * props.info.count}₽`}
-        </Text>
-        <Text size={12} style={{color: "gray"}}>
+        </Typography>
+        <Typography style={{color: "gray"}}>
             За штуку: {`~${props.info.cost}₽`}
-        </Text>
-        <Button onClick={_ => setModalOpen(true)}><Edit/></Button>
+        </Typography>
+        <IconButton onClick={() => setModalOpen(true)}><Edit/></IconButton>
         <GoodEditor info={props.info} open={modalOpen} setOpen={setModalOpen}/>
     </VStack>
 }
@@ -199,7 +247,7 @@ function CreateGoodRequest() {
     const [count, setCount] = useState<number>()
     const [cost, setCost] = useState<number>()
 
-    const toaster = useToaster()
+    const toaster = useSnackbar()
 
     const revalidator = useRevalidator()
 
@@ -218,11 +266,11 @@ function CreateGoodRequest() {
         revalidator.revalidate()
     }
 
-    return <VStack spacing={24} style={{padding: "8px", ...cardCss}}>
-        <Text>Создать запрос</Text>
+    return <VStack style={{padding: "1em", ...cardCss}}>
+        <Typography>Создать запрос</Typography>
         <VStack>
             Имя
-            <Input value={name} onChange={setName}/>
+            <TextField value={name} onChange={e => setName(e.target.value)}/>
         </VStack>
         <VStack>
             Количество
@@ -232,23 +280,28 @@ function CreateGoodRequest() {
             Примерная цена за штуку
             <InputNumber value={cost} onChange={setCost}/>
         </VStack>
-        <Button disabled={!name || !cost || !count} onClick={create}>Создать</Button>
+        <Button color={"success"} variant={"contained"} disabled={!name || !cost || !count}
+                onClick={create}>Создать</Button>
     </VStack>
 }
 
 function GoodsContainer(props: {
     children?: any
 }) {
-    return <div
-        style={{
+    return <Box>
+        <Typography variant={"h3"}>Заказы</Typography>
+        <Box
+        sx={{
             display: "flex",
             flexDirection: "row",
             flexWrap: "wrap",
-            gap: "8px"
+            gap: ".5em",
+            justifyContent: "center"
         }}
     >
         {props.children}
-    </div>
+    </Box>
+    </Box>
 }
 
 function LogsGrid(props: {
@@ -276,10 +329,10 @@ function LogsGrid(props: {
             renderCell: e => e.row.message,
         },
     ]
-    return <VStack alignItems={"center"} style={{width: "100%"}} spacing={16}>
+    return <VStack alignItems={"center"} style={{width: "100%"}} spacing={1}>
 
-        <Heading>История</Heading>
-        <DataGrid className={"rdg-dark"} style={{width: "75%"}} columns={columns} rows={props.logs}/>
+        <Typography variant={"h4"}>История</Typography>
+        <DataGrid className={"rdg-dark"} style={{width: "100%"}} columns={columns} rows={props.logs}/>
     </VStack>
 }
 
@@ -288,7 +341,7 @@ function Goods() {
 
     const importancies = data.goods.map(a => a.importancy)
     const minImportancy = Math.min(0, Math.min(...importancies))
-    const maxImportancy = Math.max(100, Math.max(...importancies))
+    const maxImportancy = Math.max(10, Math.max(...importancies))
 
     function add(accumulator: number, a: number): number {
         return accumulator + a;
@@ -298,14 +351,17 @@ function Goods() {
     const totalCollected = data.transactions.map(a => a.amount).reduce(add, 0)
 
     return <VStack divider={<Divider/>} style={{width: "100%"}}>
+        <Typography variant={"h3"}>
+            Сбор пожеланий продуктов
+        </Typography>
         <BarChart
             series={[
-                {data: [totalCost], label: "Нужно"},
-                {data: [totalCollected], label: "Собрали"},
+                {data: [totalCost], label: "Нужно денег"},
+                {data: [totalCollected], label: "Собрали денег"},
             ]}
             layout="horizontal"
-            width={500}
-            height={300}
+            width={800}
+            height={500}
         />
         <GoodsContainer>
             {data.goods.map(a => <GoodCard key={a.id} info={a} minPriority={minImportancy}
@@ -319,7 +375,7 @@ function Goods() {
 async function loader(): Promise<GoodsData> {
     const goods = await authorizedGet<GoodRequestDTO[]>(null, "/api/goods")
     const transactions = await authorizedGet<MoneyTransactionDTO[]>(null, "/api/transactions")
-    const logs = await authorizedGet<MoneyTransactionDTO[]>(null, "/api/goods/logs")
+    const logs = await authorizedGet<GoodLogDTO[]>(null, "/api/goods/logs")
 
     return new GoodsData(transactions, goods, logs)
 }
@@ -328,7 +384,7 @@ export const goodsSection: Section = {
     path: "/requests",
     element: <Goods/>,
     loader: loader,
-    icon: <ShoppingCart/>,
+    icon: <Icon>shopping_cart</Icon>,
     name: "Чо купить",
     adminOnly: false
 }

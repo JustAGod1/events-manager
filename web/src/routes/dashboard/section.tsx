@@ -4,5 +4,5 @@ import React from "react";
 export interface Section extends NonIndexRouteObject {
     name: string
     icon: React.Element,
-    adminOnly: boolean
+    adminOnly?: boolean
 }

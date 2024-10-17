@@ -2,10 +2,8 @@ import React, {Component, useState} from "react";
 import {EventInfoDTO, ParticipantDTO} from "../../base/data";
 import {Section} from "./section";
 import {authorizedGet, authorizedPatch, authorizedPost, showErrorMessage, showOkMessage} from "../base";
-import {Button, Col, Grid, Heading, HStack, InlineEdit, Input, Row, Text, useToaster, VStack} from "rsuite";
 import {useLoaderData} from "react-router-dom";
 
-import User from '@rsuite/icons/legacy/User';
 
 
 function Field<T, C extends React.ElementType>({label, as, value, setValue, ...rest}: {

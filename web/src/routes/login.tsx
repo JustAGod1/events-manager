@@ -1,9 +1,9 @@
-import React, {useId, useState} from "react";
-import {Button, HStack, Input, InputPicker, Text, useToaster, VStack} from "rsuite";
+import React, {useState} from "react";
 import {LoginUserDTO} from "../base/data";
 import {useLoaderData} from "react-router-dom";
 import {LabeledInput, NamePicker, safeFetchBuilder} from "./base";
-
+import {Button, Stack, TextField, Typography} from "@mui/material";
+import {useSnackbar} from "notistack";
 
 
 function PasswordInput(props: {
@@ -11,7 +11,7 @@ function PasswordInput(props: {
     onChange: (_: string) => void
 }) {
     return <LabeledInput name={"Пароль:"}>
-        <Input name={"password"} value={props.value} onChange={props.onChange}/>
+        <TextField name={"password"} value={props.value} onChange={e => props.onChange(e.target.value)}/>
     </LabeledInput>
 }
 
@@ -22,7 +22,7 @@ function LoginPanel() {
 
     const needPassword = name?.hasPassword ?? false
 
-    const toaster = useToaster()
+    const toaster = useSnackbar()
 
     async function authorize() {
         let body = new FormData()
@@ -53,20 +53,20 @@ function LoginPanel() {
             .build().run()
     }
 
-    return <VStack alignItems={"center"} spacing={"24px"}>
-        <Text weight={"bold"}>
-            Hello motherfucker
-        </Text>
-        <VStack spacing={"16px"}>
+    return <Stack direction="column" alignItems={"center"} spacing={"24px"}>
+        <Typography fontWeight={"bold"}>
+            Hello
+        </Typography>
+        <Stack direction="column" spacing={"16px"}>
             <NamePicker variants={users} value={name} onChange={setName}/>
             {
                 needPassword ? <PasswordInput value={password} onChange={setPassword}/> : undefined
             }
-        </VStack>
+        </Stack>
 
         <Button disabled={!name} onClick={authorize}>Login</Button>
 
-    </VStack>
+    </Stack>
 }
 
 export async function loginLoader(): Promise<LoginUserDTO[]> {
@@ -75,9 +75,9 @@ export async function loginLoader(): Promise<LoginUserDTO[]> {
 }
 
 export function Login() {
-    return <VStack justifyContent={"center"} style={{height: "100%"}}>
-        <HStack justifyContent={"center"} style={{width: "100%"}}>
+    return <Stack direction={"column"} justifyContent={"center"} style={{height: "100%"}}>
+        <Stack direction={"row"} justifyContent={"center"} style={{width: "100%"}}>
             <LoginPanel/>
-        </HStack>
-    </VStack>
+        </Stack>
+    </Stack>
 }

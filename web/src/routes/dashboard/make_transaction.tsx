@@ -1,10 +1,10 @@
 import React, {useState} from "react";
-import {Button, InputNumber, Text, useToaster, VStack} from "rsuite";
-import {default as List} from "@rsuite/icons/legacy/List";
 import {LoginUserDTO, NewTransactionDTO} from "../../base/data";
 import {useLoaderData} from "react-router-dom";
-import {authorizedPost, NamePicker, showOkMessage} from "../base";
+import {authorizedPost, InputNumber, NamePicker, showOkMessage, VStack} from "../base";
 import {Section} from "./section";
+import {useSnackbar} from "notistack";
+import {Button, Icon, Typography} from "@mui/material";
 
 export async function loader(): Promise<LoginUserDTO[]> {
     const r = await fetch("/api/login/users")
@@ -16,7 +16,7 @@ function LabeledInput(props: {
     children: any
 }) {
     return <VStack>
-        <Text>{props.name}</Text>
+        <Typography>{props.name}</Typography>
         {props.children}
     </VStack>
 }
@@ -35,7 +35,7 @@ function MakeTransaction() {
     const [name, setName] = useState<LoginUserDTO>()
     const [amount, setAmount] = useState<number>()
 
-    const toaster = useToaster()
+    const toaster = useSnackbar()
 
     async function send() {
         await authorizedPost<NewTransactionDTO>(toaster, "/api/create_transaction", {
@@ -55,8 +55,8 @@ export const makeTransactionSection : Section = {
     path: "/new_transaction",
     element: <MakeTransaction/>,
     loader: loader,
-    icon: <List/>,
-    name: "Записать деньги",
+    icon: <Icon>reorder</Icon>,
+    name: "Записать",
     adminOnly: true
 }
 

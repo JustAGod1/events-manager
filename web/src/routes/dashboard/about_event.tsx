@@ -1,25 +1,22 @@
 import React from "react";
 import {EventInfoDTO} from "../../base/data";
 import {Section} from "./section";
-import {authorizedGet} from "../base";
-import {Heading, Text, VStack} from "rsuite";
+import {authorizedGet, VStack} from "../base";
 import {useLoaderData} from "react-router-dom";
+import {Icon, Typography} from "@mui/material";
 
-import Info from '@rsuite/icons/legacy/Info';
 
 
 function AboutEvent() {
     const info = useLoaderData() as EventInfoDTO
     return <VStack style={{width: "100%"}}>
         <VStack alignItems={"center"} style={{width: "100%"}}>
-            <Heading as={"h3"}>
+            <Typography variant={"h3"}>
                 {info.name}
-            </Heading>
+            </Typography>
         </VStack>
         <VStack>
-            <Text>
                 {info.info}
-            </Text>
         </VStack>
     </VStack>
 }
@@ -31,7 +28,7 @@ async function loader(): Promise<EventInfoDTO> {
 export const aboutSection: Section = {
     path: "/info",
     name: "О событии",
-    icon: <Info/>,
+    icon: <Icon>info</Icon>,
     element: <AboutEvent/>,
     loader: loader
 }

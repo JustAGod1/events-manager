@@ -1,13 +1,9 @@
 import React from "react";
-import {HStack, InputPicker, Message, Text, toaster, Toaster} from "rsuite";
-import {ToastContainerProps} from "rsuite/esm/toaster/ToastContainer";
 import {LoginUserDTO} from "../base/data";
+import {ProviderContext} from "notistack";
+import {Autocomplete, Stack, TextField, Typography} from "@mui/material";
 
-export interface Toaster {
-    push: (message: React.ReactNode, options?: ToastContainerProps) => string | Promise<string | undefined> | undefined;
-
-    remove: (key: string) => void;
-}
+export type Toaster = ProviderContext;
 
 export class SafeFetch<R = Response> {
     private readonly promise: Promise<Response>
@@ -93,7 +89,7 @@ export class SafeFetchBuilder<R = Response> {
 
     build(): SafeFetch<R> {
         return new SafeFetch<R>(
-            toaster,
+            this.toaster,
             fetch(this.url, this.init),
             this._onSuccess,
             this._onError,
@@ -103,7 +99,7 @@ export class SafeFetchBuilder<R = Response> {
 
 }
 
-export function safeFetchBuilder<R>(toaster: Toaster | null, url: string, init: RequestInit | null) : SafeFetchBuilder<R>{
+export function safeFetchBuilder<R>(toaster: Toaster | null, url: string, init: RequestInit | null): SafeFetchBuilder<R> {
     return new SafeFetchBuilder(url, init, toaster)
 }
 
@@ -121,10 +117,11 @@ export async function authorizedGet<R>(toaster: Toaster | undefined, url: string
 }
 
 export async function authorizedFetch<T, R>(toaster: Toaster | undefined, url: string, method: string, body?: T): Promise<R> {
-    async function onSuccess(r: Response) : Promise<R> {
+    async function onSuccess(r: Response): Promise<R> {
         return await r.json()
     }
-    async function onError(r: Response) : Promise<R> {
+
+    async function onError(r: Response): Promise<R> {
         if (r.status == 401) {
             window.location.href = "/login"
         } else throw r.status
@@ -146,31 +143,14 @@ export async function authorizedFetch<T, R>(toaster: Toaster | undefined, url: s
         .run()
 
 
-
 }
+
 export function showOkMessage(toaster: Toaster, msg: string) {
-    const message = (
-        <Message type="success" bordered showIcon>
-            <strong>Success!</strong> {msg}
-        </Message>
-    )
-
-    toaster.push(message, {
-        placement: "bottomEnd"
-    })
-
+    toaster.enqueueSnackbar("Success!", {variant: "success"})
 }
 
 export function showErrorMessage(toaster: Toaster, msg: string) {
-    const message = (
-        <Message type="error" bordered showIcon>
-            <strong>Error!</strong> {msg}
-        </Message>
-    )
-
-    toaster.push(message, {
-        placement: "bottomEnd"
-    })
+    toaster.enqueueSnackbar("Success!", {variant: "error"})
 
 }
 
@@ -178,32 +158,49 @@ export function LabeledInput(props: {
     name: string,
     children: any
 }) {
-    return <HStack spacing={"16px"} style={{width: "100%"}}>
-        <Text>{props.name}</Text>
+    return <Stack direction="row" spacing={"16px"} style={{width: "100%"}}>
+        <Typography>{props.name}</Typography>
         {props.children}
-    </HStack>
+    </Stack>
 }
+
 export function NamePicker(props: {
     variants: LoginUserDTO[],
     value: LoginUserDTO,
     onChange: (_: LoginUserDTO) => void
 }) {
-    function renderItem(item: LoginUserDTO) {
-        return <Text>{item.name}</Text>
-    }
+    const mapped = props.variants
+    return <Autocomplete
+        sx={{
+            minWidth: "200px"
+        }}
+        value={props.value}
+        options={mapped}
+        onChange={(_, v) => props.onChange(v)}
+        renderInput={(params) => <TextField {...params} label="Имя"/>}
+        renderOption={(params, option) => <Typography {...params}>{option.name}</Typography>}
+        getOptionLabel={e => e.name}
+    />
+}
 
-    const mapped = props.variants.map(a => {
-        return {
-            value: a,
-            label: renderItem(a)
-        }
-    })
-    return <LabeledInput name={"Имя:"}>
-        <InputPicker
-            name={"login"}
-            data={mapped}
-            onChange={props.onChange}
-            value={props.value}
-        />
-    </LabeledInput>
+export function InputNumber(
+    props: {
+        value: number,
+        onChange: (v: number) => void
+    }
+) {
+    return <TextField slotProps={{htmlInput: {type: "number"}}} value={props.value}
+                      onChange={e => props.onChange(parseInt(e.target.value))}/>
+}
+
+export function VStack(
+    props: any
+) {
+    return <Stack spacing={".5em"} direction={"column"} {...props}/>
+}
+
+export function HStack(
+    props: any
+) {
+    return <Stack spacing={".5em"} direction={"row"} {...props}/>
 }

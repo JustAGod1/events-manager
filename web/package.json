@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --clearScreen false",
     "prod": "vite build "
   },
   "devDependencies": {
@@ -10,12 +10,13 @@
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.4",
     "@mui/material": "^6.1.2",
     "@mui/x-charts": "^7.18.0",
     "color-interpolate": "^1.0.5",
+    "notistack": "^3.0.1",
     "react": "^18.3.1",
     "react-data-grid": "^7.0.0-beta.47",
-    "react-router-dom": "^6.26.2",
-    "rsuite": "^5.71.0"
+    "react-router-dom": "^6.26.2"
   }
 }

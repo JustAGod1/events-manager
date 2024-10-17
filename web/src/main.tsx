@@ -1,19 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './main.less';
-import {Button, CustomProvider} from "rsuite";
+import './main.css';
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import {Login, loginLoader} from "./routes/login";
+import {createTheme, CssBaseline, responsiveFontSizes, ThemeProvider} from "@mui/material";
+import {SnackbarProvider} from "notistack";
 import {Holder, holderLoader} from "./routes/dashboard/holder";
 import {Section} from "./routes/dashboard/section";
 import {aboutSection} from "./routes/dashboard/about_event";
 import {aboutMeSection} from "./routes/dashboard/about_me";
-import {makeTransactionSection} from "./routes/dashboard/make_transaction";
 import {moneyChartSection} from "./routes/dashboard/money_chart";
 import {goodsSection} from "./routes/dashboard/goods";
-import {createTheme, ThemeProvider} from "@mui/material";
+import {makeTransactionSection} from "./routes/dashboard/make_transaction";
 
-const sections: Section[] = [aboutSection, aboutMeSection, moneyChartSection, goodsSection, makeTransactionSection]
+const sections: Section[] = [aboutSection, moneyChartSection, goodsSection, makeTransactionSection]
 
 const router = createBrowserRouter([
     {
@@ -34,15 +34,19 @@ const darkTheme = createTheme({
     palette: {
         mode: 'dark',
     },
+    typography: {
+        fontSize: 32
+    }
 });
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <CustomProvider theme="dark">
-            <ThemeProvider theme={darkTheme}>
-                <RouterProvider router={router} />
-            </ThemeProvider>
-        </CustomProvider>
+        <ThemeProvider theme={darkTheme}>
+            <CssBaseline enableColorScheme={true}/>
+            <SnackbarProvider maxSnack={5}>
+                <RouterProvider router={router}/>
+            </SnackbarProvider>
+        </ThemeProvider>
     </React.StrictMode>
 );

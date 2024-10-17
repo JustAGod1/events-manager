@@ -1,16 +1,14 @@
 import React from "react";
 import {Section} from "./section";
-import {Heading, VStack} from "rsuite";
-import PieChart from "@rsuite/icons/legacy/PieChart";
-import {authorizedGet} from "../base";
+import {authorizedGet, VStack} from "../base";
 import {MoneyTransactionDTO} from "../../base/data";
 import {useLoaderData} from "react-router-dom";
 import {PieChart as MuiPieChart} from "@mui/x-charts";
-import {createTheme, ThemeProvider} from "@mui/material";
 import {Column} from "react-data-grid";
 import 'react-data-grid/lib/styles.css';
 
 import DataGrid from 'react-data-grid';
+import {Icon, Typography} from "@mui/material";
 
 interface PieEntry {
     id: number
@@ -73,8 +71,8 @@ function TransactionsGrid(props: {
 
     return <VStack alignItems={"center"} style={{width: "100%"}} spacing={16}>
 
-        <Heading>История</Heading>
-        <DataGrid className={"rdg-dark"} style={{width: "75%"}} columns={columns} rows={props.transactions}/>
+        <Typography variant={"h4"}>История</Typography>
+        <DataGrid className={"rdg-dark"} style={{width: "100%"}} columns={columns} rows={props.transactions}/>
     </VStack>
 }
 
@@ -84,7 +82,7 @@ function MoneyChart() {
 
     return <VStack style={{width: "100%"}}>
         <VStack alignItems={"center"} style={{width: "100%"}} spacing={16}>
-            <Heading>Статус сбора денег</Heading>
+            <Typography variant={"h3"}>Статус сбора денег</Typography>
             <Chart series={series}/>
             <TransactionsGrid transactions={transactions}/>
         </VStack>
@@ -99,7 +97,7 @@ export const moneyChartSection: Section = {
     path: "/charts",
     element: <MoneyChart/>,
     loader: loader,
-    icon: <PieChart/>,
+    icon: <Icon>pie_chart</Icon>,
     name: "Общак",
     adminOnly: false
 }
