@@ -92,7 +92,7 @@ function GoodEditor(props: {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: 400,
+        width: "80%",
         bgcolor: 'background.paper',
         border: '2px solid #000',
         boxShadow: 24,
@@ -104,11 +104,11 @@ function GoodEditor(props: {
         onClose={_ => props.setOpen(false)}
     >
         <VStack sx={style} spacing={"1em"}>
-            <Typography variant={"h2"}>
+            <Typography fontWeight={"bold"}>
                 {props.info.name}
             </Typography>
 
-            <div
+            <Box
                 style={{
                     display: "grid",
                     gridAutoRows: "1fr",
@@ -121,7 +121,7 @@ function GoodEditor(props: {
 
                 <Typography>Примерная цена за штуку</Typography>
                 <InputNumber value={cost} onChange={setCost}/>
-            </div>
+            </Box>
 
             <Button color={"success"} variant={"contained"} onClick={save}>
                 Сохранить
@@ -216,13 +216,18 @@ function GoodCard(props: {
     }
 
     return <Accordion
-        style={{width: "100%", padding: "2em", border: "solid 2px", borderRadius: "8px", borderColor: borderColor}}>
+        style={{width: "100%", border: "solid 2px", borderRadius: "8px", borderColor: borderColor}}>
         <AccordionSummary expandIcon={<ExpandMore/>}>
-            <Typography variant={"h4"} fontWeight={"bold"}>
-                {props.info.name}
-            </Typography>
+            <HStack spacing={".5em"} alignItems={"center"}>
+                <Typography variant={"h4"} fontWeight={"bold"}>
+                    {props.info.name}
+                </Typography>
+                <Typography fontSize={"1.25em"} color={"secondary"}>
+                    {" x" + props.info.count}
+                </Typography>
+            </HStack>
         </AccordionSummary>
-        <AccordionDetails sx={{width: "100%"}}>
+        <AccordionDetails sx={{width: "100%", padding: "1em"}}>
             <VStack style={{marginBottom: "16px"}}>
                 <Typography style={{color: "gray"}}>
                     Предложил: {props.info.author.name}
