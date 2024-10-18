@@ -12,8 +12,20 @@ import {useLoaderData, useRevalidator} from "react-router-dom";
 import Color from "https://colorjs.io/dist/color.js";
 import {BarChart} from "@mui/x-charts";
 import DataGrid, {Column} from "react-data-grid";
-import {Box, Button, Divider, Icon, Modal, TextField, Typography} from "@mui/material";
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Box,
+    Button,
+    Divider,
+    Icon,
+    Modal,
+    TextField,
+    Typography
+} from "@mui/material";
 import {useSnackbar} from "notistack";
+import {ExpandMore} from "@mui/icons-material";
 
 const cardCss: CSSProperties = {
     border: "solid 1px gray",
@@ -203,43 +215,48 @@ function GoodCard(props: {
         await sendSimple("/api/goods/dec_cnt", "Уменьшил")
     }
 
-    return <VStack style={{padding: "2em", border: "solid 2px", borderRadius: "8px", borderColor: borderColor}}>
-        <VStack style={{marginBottom: "16px"}}>
+    return <Accordion
+        style={{width: "100%", padding: "2em", border: "solid 2px", borderRadius: "8px", borderColor: borderColor}}>
+        <AccordionSummary expandIcon={<ExpandMore/>}>
             <Typography variant={"h4"} fontWeight={"bold"}>
                 {props.info.name}
             </Typography>
-            <Typography style={{color: "gray"}}>
-                Предложил: {props.info.author.name}
+        </AccordionSummary>
+        <AccordionDetails sx={{width: "100%"}}>
+            <VStack style={{marginBottom: "16px"}}>
+                <Typography style={{color: "gray"}}>
+                    Предложил: {props.info.author.name}
+                </Typography>
+            </VStack>
+            <HStack>
+                Важность:
+                <Typography
+                    style={{
+                        color: borderColor
+                    }}>{props.info.importancy}</Typography>
+            </HStack>
+            <HStack>
+                <MinusButton onClick={decImportancy}/>
+                <PlusButton onClick={incImportancy}/>
+            </HStack>
+            <HStack>
+                Количество:
+                {props.info.count}
+            </HStack>
+            <HStack>
+                <MinusButton onClick={decCount}/>
+                <PlusButton onClick={incCount}/>
+            </HStack>
+            <Typography>
+                {`${props.info.cost * props.info.count}₽`}
             </Typography>
-        </VStack>
-        <HStack>
-            Важность:
-            <Typography
-                style={{
-                    color: borderColor
-                }}>{props.info.importancy}</Typography>
-        </HStack>
-        <HStack>
-            <MinusButton onClick={decImportancy}/>
-            <PlusButton onClick={incImportancy}/>
-        </HStack>
-        <HStack>
-            Количество:
-            {props.info.count}
-        </HStack>
-        <HStack>
-            <MinusButton onClick={decCount}/>
-            <PlusButton onClick={incCount}/>
-        </HStack>
-        <Typography>
-            {`${props.info.cost * props.info.count}₽`}
-        </Typography>
-        <Typography style={{color: "gray"}}>
-            За штуку: {`~${props.info.cost}₽`}
-        </Typography>
-        <IconButton onClick={() => setModalOpen(true)}><Edit/></IconButton>
-        <GoodEditor info={props.info} open={modalOpen} setOpen={setModalOpen}/>
-    </VStack>
+            <Typography style={{color: "gray"}}>
+                За штуку: {`~${props.info.cost}₽`}
+            </Typography>
+            <IconButton onClick={() => setModalOpen(true)}><Edit/></IconButton>
+            <GoodEditor info={props.info} open={modalOpen} setOpen={setModalOpen}/>
+        </AccordionDetails>
+    </Accordion>
 }
 
 function CreateGoodRequest() {
@@ -291,16 +308,16 @@ function GoodsContainer(props: {
     return <Box>
         <Typography variant={"h3"}>Заказы</Typography>
         <Box
-        sx={{
-            display: "flex",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            gap: ".5em",
-            justifyContent: "center"
-        }}
-    >
-        {props.children}
-    </Box>
+            sx={{
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: ".5em",
+                justifyContent: "center"
+            }}
+        >
+            {props.children}
+        </Box>
     </Box>
 }
 
